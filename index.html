@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Japa Counter</title>
+
+  <!-- PWA -->
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#2c3e50">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Segoe UI", sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #2c3e50, #4ca1af);
+      color: #fff;
+    }
+
+    .card {
+      width: 360px;
+      padding: 28px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+      text-align: center;
+    }
+
+    h1 {
+      margin-bottom: 10px;
+      letter-spacing: 1px;
+    }
+
+    .counter {
+      font-size: 64px;
+      font-weight: bold;
+      margin: 20px 0;
+      transition: transform 0.15s ease;
+    }
+
+    .info {
+      font-size: 14px;
+      opacity: 0.9;
+      margin-bottom: 10px;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 12px;
+      margin-top: 15px;
+    }
+
+    button {
+      flex: 1;
+      padding: 12px;
+      font-size: 15px;
+      font-weight: bold;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+
+    .inc {
+      background: #ffffff;
+      color: #2c3e50;
+    }
+
+    .dec {
+      background: #e74c3c;
+      color: #fff;
+    }
+
+    .reset {
+      width: 100%;
+      margin-top: 14px;
+      background: #f1c40f;
+      color: #333;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      opacity: 0.95;
+    }
+
+    button:active {
+      transform: scale(0.95);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="card">
+    <h1>🧘 Japa Counter</h1>
+
+    <div id="count" class="counter">0</div>
+
+    <div class="info">
+      Mala: <span id="mala">0</span> |
+      Beads: <span id="beads">0</span>/108
+    </div>
+
+    <div class="info">
+      🔥 Daily Streak: <span id="streak">0</span> days
+    </div>
+
+    <div class="buttons">
+      <button class="dec" onclick="decrement()">−</button>
+      <button class="inc" onclick="increment()">+</button>
+    </div>
+
+    <button class="reset" onclick="resetCounter()">Reset</button>
+  </div>
+
+  <script>
+    let count = Number(localStorage.getItem("count")) || 0;
+    let mala = Math.floor(count / 108);
+    let beads = count % 108;
+
+    const today = new Date().toDateString();
+    const lastDate = localStorage.getItem("lastDate");
+    let streak = Number(localStorage.getItem("streak")) || 0;
+
+    if (lastDate !== today) {
+      const yesterday = new Date(Date.now() - 86400000).toDateString();
+      if (lastDate === yesterday) {
+        streak++;
+      } else {
+        streak = 1;
+      }
+      localStorage.setItem("lastDate", today);
+      localStorage.setItem("streak", streak);
+    }
+
+    const counter = document.getElementById("count");
+
+    function updateUI() {
+      counter.innerText = count;
+      document.getElementById("mala").innerText = mala;
+      document.getElementById("beads").innerText = beads;
+      document.getElementById("streak").innerText = streak;
+
+      counter.style.transform = "scale(1.2)";
+      setTimeout(() => counter.style.transform = "scale(1)", 150);
+
+      localStorage.setItem("count", count);
+    }
+
+    function increment() {
+      count++;
+      mala = Math.floor(count / 108);
+      beads = count % 108;
+      updateUI();
+    }
+
+    function decrement() {
+      if (count > 0) {
+        count--;
+        mala = Math.floor(count / 108);
+        beads = count % 108;
+        updateUI();
+      }
+    }
+
+    function resetCounter() {
+      count = 0;
+      mala = 0;
+      beads = 0;
+      updateUI();
+    }
+
+    updateUI();
+  </script>
+
+  <!-- Service Worker Registration -->
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("/service-worker.js")
+          .then(() => console.log("Service Worker registered"))
+          .catch(err => console.error("Service Worker registration failed:", err));
+      });
+    }
+  </script>
+</body>
+</html>
+

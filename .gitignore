@@ -1,0 +1,6 @@
+# Linux system files
+.*
+!.gitignore
+
+# Logs
+*.log
