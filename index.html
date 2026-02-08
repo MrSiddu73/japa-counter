@@ -66,6 +66,11 @@
       padding: 20px;
       position: relative;
       z-index: 10;
+      pointer-events: none;
+    }
+    
+    .container > * {
+      pointer-events: auto;
     }
     
     .sacred-circle {
@@ -234,6 +239,7 @@
       opacity: 0.5;
       letter-spacing: 0.5px;
       animation: pulse 3s ease-in-out infinite;
+      pointer-events: none;
     }
     
     @keyframes pulse {
@@ -323,10 +329,10 @@
     }
   </style>
 </head>
-<body onclick="handleTap(event)">
+<body>
   <div class="sacred-circle"></div>
   
-  <div class="container">
+  <div class="container" id="countableArea">
     <div class="om">ॐ</div>
     <div class="mantra">नमः शिवाय</div>
     <div class="count" id="count">0</div>
@@ -337,7 +343,7 @@
     </div>
     <div class="controls">
       <button class="btn" onclick="event.stopPropagation(); increment()">+ Count Japa</button>
-      <button class="btn btn-reset" onclick="event.stopPropagation(); showResetModal()">🔄 Reset</button>
+      <button class="btn btn-reset" onclick="event.stopPropagation(); showResetModal(event)">🔄 Reset</button>
     </div>
   </div>
   
@@ -349,8 +355,8 @@
       <h2>🕉️ Reset Japa Counter?</h2>
       <p>Are you sure you want to reset your count to zero? This action cannot be undone.</p>
       <div class="modal-buttons">
-        <button class="btn" onclick="closeResetModal()">Cancel</button>
-        <button class="btn btn-reset" onclick="confirmReset()">Yes, Reset</button>
+        <button class="btn" onclick="event.stopPropagation(); closeResetModal(event)">Cancel</button>
+        <button class="btn btn-reset" onclick="event.stopPropagation(); confirmReset(event)">Yes, Reset</button>
       </div>
     </div>
   </div>
@@ -392,6 +398,16 @@
     }
     
     function handleTap(event) {
+      // Check if click is on the countable area (not on buttons or modal)
+      const modal = document.getElementById('resetModal');
+      const controls = document.querySelector('.controls');
+      
+      // Don't count if clicking on modal or controls or their children
+      if (modal.classList.contains('active')) return;
+      if (event.target.closest('.controls')) return;
+      if (event.target.closest('.modal')) return;
+      if (event.target.tagName === 'BUTTON') return;
+      
       // Create ripple effect
       const ripple = document.createElement('div');
       ripple.className = 'ripple';
@@ -405,15 +421,18 @@
       increment();
     }
     
-    function showResetModal() {
+    function showResetModal(event) {
+      if (event) event.stopPropagation();
       document.getElementById('resetModal').classList.add('active');
     }
     
-    function closeResetModal() {
+    function closeResetModal(event) {
+      if (event) event.stopPropagation();
       document.getElementById('resetModal').classList.remove('active');
     }
     
-    function confirmReset() {
+    function confirmReset(event) {
+      if (event) event.stopPropagation();
       count = 0;
       mala = 0;
       beads = 0;
@@ -424,6 +443,9 @@
       // streak = 0;
       // localStorage.setItem("streak", streak);
     }
+    
+    // Add click listener to body for tap-to-count
+    document.body.addEventListener('click', handleTap, true);
     
     // Keyboard shortcut: Press 'R' to reset (with confirmation)
     document.addEventListener('keydown', (e) => {
