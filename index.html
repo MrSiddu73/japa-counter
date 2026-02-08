@@ -15,119 +15,86 @@
       padding: 0;
       box-sizing: border-box;
       font-family: "Segoe UI", sans-serif;
+      user-select: none;
     }
 
     body {
-      min-height: 100vh;
-      background: 
-        linear-gradient(
-          rgba(0, 0, 0, 0.45),
-          rgba(0, 0, 0, 0.45)
+      height: 100vh;
+      width: 100vw;
+      background:
+        radial-gradient(
+          rgba(0, 0, 0, 0.35),
+          rgba(0, 0, 0, 0.85)
         ),
-        url("om-background.png") no-repeat center center fixed;
-      background-size: cover;
+        url("om-background.png") center center / cover no-repeat fixed;
       display: flex;
       justify-content: center;
       align-items: center;
       color: #fff;
+      overflow: hidden;
     }
 
-    .card {
-      width: 360px;
-      padding: 28px;
-      border-radius: 20px;
-      background: rgba(0, 0, 0, 0.55);
-      backdrop-filter: blur(10px);
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+    .container {
       text-align: center;
+      padding: 20px;
     }
 
-    h1 {
-      margin-bottom: 12px;
-      letter-spacing: 1px;
-      font-size: 22px;
+    .om {
+      font-size: 140px;
+      font-weight: 600;
+      line-height: 1;
+      animation: breathe 6s ease-in-out infinite;
+      text-shadow:
+        0 0 25px rgba(255, 200, 100, 0.6),
+        0 0 60px rgba(255, 180, 80, 0.4);
     }
 
-    .counter {
-      font-size: 64px;
-      font-weight: bold;
-      margin: 18px 0;
-      transition: transform 0.15s ease;
+    @keyframes breathe {
+      0%   { transform: scale(1); opacity: 0.9; }
+      50%  { transform: scale(1.08); opacity: 1; }
+      100% { transform: scale(1); opacity: 0.9; }
+    }
+
+    .count {
+      margin-top: 24px;
+      font-size: 42px;
+      font-weight: 500;
+      opacity: 0.95;
     }
 
     .info {
+      margin-top: 10px;
       font-size: 14px;
-      opacity: 0.95;
-      margin-bottom: 8px;
+      opacity: 0.75;
+      letter-spacing: 0.5px;
     }
 
-    .buttons {
-      display: flex;
-      gap: 12px;
-      margin-top: 16px;
-    }
-
-    button {
-      flex: 1;
-      padding: 12px;
-      font-size: 15px;
-      font-weight: bold;
-      border: none;
-      border-radius: 12px;
-      cursor: pointer;
-      transition: all 0.25s ease;
-    }
-
-    .inc {
-      background: #f5c542;
-      color: #000;
-    }
-
-    .dec {
-      background: #c0392b;
-      color: #fff;
-    }
-
-    .reset {
+    .hint {
+      position: absolute;
+      bottom: 20px;
       width: 100%;
-      margin-top: 14px;
-      background: #ecf0f1;
-      color: #000;
-    }
-
-    button:hover {
-      transform: translateY(-2px);
-      opacity: 0.95;
-    }
-
-    button:active {
-      transform: scale(0.96);
+      text-align: center;
+      font-size: 13px;
+      opacity: 0.6;
     }
   </style>
 </head>
 
-<body>
-  <div class="card">
-    <h1>🧘 Japa Counter</h1>
+<body onclick="increment()">
 
-    <div id="count" class="counter">0</div>
+  <div class="container">
+    <div class="om">ॐ</div>
 
-    <div class="info">
-      Mala: <span id="mala">0</span> |
-      Beads: <span id="beads">0</span>/108
-    </div>
+    <div class="count" id="count">0</div>
 
     <div class="info">
-      🔥 Daily Streak: <span id="streak">0</span> days
+      Mala <span id="mala">0</span> •
+      Beads <span id="beads">0</span>/108 •
+      🔥 <span id="streak">0</span> days
     </div>
-
-    <div class="buttons">
-      <button class="dec" onclick="decrement()">−</button>
-      <button class="inc" onclick="increment()">+</button>
-    </div>
-
-    <button class="reset" onclick="resetCounter()">Reset</button>
   </div>
+
+  <div class="hint">Tap anywhere to continue japa</div>
 
   <script>
     let count = Number(localStorage.getItem("count")) || 0;
@@ -145,17 +112,11 @@
       localStorage.setItem("streak", streak);
     }
 
-    const counter = document.getElementById("count");
-
     function updateUI() {
-      counter.innerText = count;
+      document.getElementById("count").innerText = count;
       document.getElementById("mala").innerText = mala;
       document.getElementById("beads").innerText = beads;
       document.getElementById("streak").innerText = streak;
-
-      counter.style.transform = "scale(1.15)";
-      setTimeout(() => counter.style.transform = "scale(1)", 150);
-
       localStorage.setItem("count", count);
     }
 
@@ -163,22 +124,6 @@
       count++;
       mala = Math.floor(count / 108);
       beads = count % 108;
-      updateUI();
-    }
-
-    function decrement() {
-      if (count > 0) {
-        count--;
-        mala = Math.floor(count / 108);
-        beads = count % 108;
-        updateUI();
-      }
-    }
-
-    function resetCounter() {
-      count = 0;
-      mala = 0;
-      beads = 0;
       updateUI();
     }
 
@@ -193,6 +138,6 @@
       });
     }
   </script>
+
 </body>
 </html>
-
