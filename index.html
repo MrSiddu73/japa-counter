@@ -3,12 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
   <title>Japa Counter</title>
 
   <!-- PWA -->
-  <link rel="manifest" href="/manifest.json">
-  <meta name="theme-color" content="#2c3e50">
+  <link rel="manifest" href="/japa-counter/manifest.json">
+  <meta name="theme-color" content="#000000">
 
   <style>
     * {
@@ -20,45 +19,52 @@
 
     body {
       min-height: 100vh;
+      background: 
+        linear-gradient(
+          rgba(0, 0, 0, 0.45),
+          rgba(0, 0, 0, 0.45)
+        ),
+        url("om-background.png") no-repeat center center fixed;
+      background-size: cover;
       display: flex;
       justify-content: center;
       align-items: center;
-      background: linear-gradient(135deg, #2c3e50, #4ca1af);
       color: #fff;
     }
 
     .card {
       width: 360px;
       padding: 28px;
-      border-radius: 18px;
-      background: rgba(255, 255, 255, 0.12);
-      backdrop-filter: blur(12px);
-      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+      border-radius: 20px;
+      background: rgba(0, 0, 0, 0.55);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
       text-align: center;
     }
 
     h1 {
-      margin-bottom: 10px;
+      margin-bottom: 12px;
       letter-spacing: 1px;
+      font-size: 22px;
     }
 
     .counter {
       font-size: 64px;
       font-weight: bold;
-      margin: 20px 0;
+      margin: 18px 0;
       transition: transform 0.15s ease;
     }
 
     .info {
       font-size: 14px;
-      opacity: 0.9;
-      margin-bottom: 10px;
+      opacity: 0.95;
+      margin-bottom: 8px;
     }
 
     .buttons {
       display: flex;
       gap: 12px;
-      margin-top: 15px;
+      margin-top: 16px;
     }
 
     button {
@@ -67,26 +73,26 @@
       font-size: 15px;
       font-weight: bold;
       border: none;
-      border-radius: 10px;
+      border-radius: 12px;
       cursor: pointer;
       transition: all 0.25s ease;
     }
 
     .inc {
-      background: #ffffff;
-      color: #2c3e50;
+      background: #f5c542;
+      color: #000;
     }
 
     .dec {
-      background: #e74c3c;
+      background: #c0392b;
       color: #fff;
     }
 
     .reset {
       width: 100%;
       margin-top: 14px;
-      background: #f1c40f;
-      color: #333;
+      background: #ecf0f1;
+      color: #000;
     }
 
     button:hover {
@@ -95,7 +101,7 @@
     }
 
     button:active {
-      transform: scale(0.95);
+      transform: scale(0.96);
     }
   </style>
 </head>
@@ -134,11 +140,7 @@
 
     if (lastDate !== today) {
       const yesterday = new Date(Date.now() - 86400000).toDateString();
-      if (lastDate === yesterday) {
-        streak++;
-      } else {
-        streak = 1;
-      }
+      streak = lastDate === yesterday ? streak + 1 : 1;
       localStorage.setItem("lastDate", today);
       localStorage.setItem("streak", streak);
     }
@@ -151,7 +153,7 @@
       document.getElementById("beads").innerText = beads;
       document.getElementById("streak").innerText = streak;
 
-      counter.style.transform = "scale(1.2)";
+      counter.style.transform = "scale(1.15)";
       setTimeout(() => counter.style.transform = "scale(1)", 150);
 
       localStorage.setItem("count", count);
@@ -183,13 +185,11 @@
     updateUI();
   </script>
 
-  <!-- Service Worker Registration -->
+  <!-- Service Worker -->
   <script>
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {
-        navigator.serviceWorker.register("/service-worker.js")
-          .then(() => console.log("Service Worker registered"))
-          .catch(err => console.error("Service Worker registration failed:", err));
+        navigator.serviceWorker.register("/japa-counter/service-worker.js");
       });
     }
   </script>
